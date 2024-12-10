@@ -25,7 +25,7 @@ jobs:
       - name: Install system libraries
         run: |
           sudo apt-get update
-          sudo apt-get install -y libxml2-dev libcurl4-openssl-dev libssl-dev
+          sudo apt-get install -y libxml2-dev libcurl4-openssl-dev libssl-dev pandoc pandoc-citeproc
 
       # Step 4: Set CRAN repository to avoid mirror issues
       - name: Set CRAN repository
@@ -46,4 +46,5 @@ jobs:
         run: |
           R CMD build .
           R CMD check --as-cran *.tar.gz
+
 
