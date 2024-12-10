@@ -20,17 +20,27 @@ library(SolelyData)
 
 ## Overview
 
-Welcome to the **SolelyData** package! The **SolelyData** package is designed to simplify **data cleaning**, **summarization**, and **visualization** for a wide variety of datasets. To help you get started, the package includes a built-in dataset of **animal shelter data**, which you can use for exploration, practice, or as a template for working with your own data.
+Welcome to the **SolelyData** package! This package is designed to simplify **data cleaning**, **summarization**, and **visualization**, addressing common data challenges in a wide variety of datasets. It includes built-in functions that streamline typical preprocessing tasks such as identifying typos, validating dates, and handling missing values. To help you get started, the package also comes with a built-in dataset of **animal shelter data**, which serves as a practical example for exploration.
 
 ## Installation
 
-Install the package using: `devtools::install_github("maisha-k/SolelyData")` in your console.
+Install the package using the following command in your R console:
+
+`devtools::install_github("maisha-k/SolelyData")`
+
+```
 
 ## Key Functions
 
 ### Summarizing Missing Values with `missingsum`
 
-The `missingsum` function summarizes missing data in a dataset into a table. It identifies missing or invalid values based on NA as well as user-defined criteria or default values. The default values are : "", "NA", "N/A", and "Missing". This function is particularly useful for identifying and tabulating custom terms used to represent missing data if specified.
+The `missingsum` function summarizes missing data in a dataset into a table. It identifies missing or invalid values based on NA as well as user-defined criteria or default values. The default values are : "", "NA", "N/A", and "Missing".
+
+#### **Use Cases**
+
+-   Quickly determine which columns have missing values and the extent of missingness.
+
+-   Customize missing value criteria to match dataset-specific formats
 
 ```{r}
 missingsum(animalshelter) # Calculates the sum of missing values in the dataset using default settings, including NA handling
@@ -49,7 +59,13 @@ Incomplete data is a common challenge in real-world datasets, and identifying th
 
 This function generates a histogram that displays the number of non-missing values per row, offering insights into the overall data quality and helping users decide on appropriate data cleaning strategies.
 
-In this example, we use the `plot_completeness` function to assess the completeness of an animal shelter dataset. This dataset contains 18 columns, with varying degrees of missingness across rows. This visualization enables users to quickly identify patterns of missingness and determine whether rows with lower completeness should be imputed, removed, or handled in a different way.
+#### **Use Cases**
+
+-   Determine whether rows with excessive missing data should be removed or imputed.
+
+-   Identify trends in data completeness.
+
+In the example below, we use the `plot_completeness` function to assess the completeness of an animal shelter dataset. This dataset contains 18 columns, with varying degrees of missingness across rows. This visualization enables users to quickly identify patterns of missingness and determine whether rows with lower completeness should be imputed, removed, or handled in a different way.
 
 ```{r}
 plot_completeness(animalshelter, title = "Completeness of Animal Shelter Data")
@@ -58,6 +74,12 @@ plot_completeness(animalshelter, title = "Completeness of Animal Shelter Data")
 ### Identifying Typos in Categorical Data with `solotypo`
 
 Typos in categorical data can create inconsistencies that affect downstream analysis, such as grouping and summarization. The `solotypo` function helps identify typos in your dataset by grouping similar strings and suggesting potential corrections. The function includes a `threshold` parameter, with a default value of `0.2`. This parameter determines the maximum allowable string distance (based on the Jaro-Winkler similarity method) for considering two strings as similar.
+
+#### **Use Cases**
+
+-   Standardize categorical data for analysis.
+
+-   Identify solo misspelled entries.
 
 This vignette demonstrates how to use `solotypo` to identify typos in a column and receive suggestions for correction.
 
@@ -70,11 +92,13 @@ data <- data.frame(
 ```
 
 ```{r}
+# Check for typos in the "Fruit" column with a default threshold (0.2)
 solotypo(data, column = "Fruit")
 
 ```
 
 ```{r}
+# Check for typos in the "Fruit" column with a lower threshold (here, "grap" can match to "orange)
 solotypo(data, column = "Fruit", threshold = 0.8)
 
 ```
@@ -84,6 +108,12 @@ Above, `"grap"` being matched to `"orange"` suggests that with a threshold of `0
 ### Validating Date Columns with `validate_dates`
 
 Dates are a fundamental component of many datasets, and ensuring their validity is crucial for accurate analysis. The `validate_dates` function helps identify invalid or incorrectly formatted date entries in a specified column, ensuring data consistency and reliability. This function assumes dates are entered as `%Y-%m-%d` .
+
+#### **Use Cases**
+
+-   Ensure all dates are valid and within an acceptable range.
+
+-   Detect improperly formatted dates.
 
 This vignette demonstrates how to use `validate_dates` to validate date columns in a dataset, pinpoint invalid entries, and receive structured feedback for further action.
 
@@ -113,7 +143,11 @@ validate_dates(animalshelter, date_columns = "Date", min_year = 2020, max_year =
 
 In many datasets, ensuring that column values fall within a predefined set of valid options is crucial for maintaining data quality. The `flagweirdanimals` function helps identify rows in your dataset where a specified column contains values that do not match a list of valid entries. It is not case sensitive.
 
-This function is versatile and can be applied across various contexts, from validating animal types in shelter data to ensuring consistency in any categorical column.
+#### **Use Cases**
+
+-   Validate categorical columns against known or expected values.
+
+-   Identify unexpected entries for further review.
 
 ```{r}
 animalshelter_flag <- flagweirdanimals(animalshelter, column = "animal_type", valid_types = c("dog", "cat", "rabbit", "bird"))
@@ -125,7 +159,19 @@ print(weird_animals['animal_type'])
 
 ### Flagging and Handling Non-Numeric Values with `flagnonnumeric`
 
-This function checks if a column is "mostly numeric" (based on a threshold) and flags or replaces non-numeric values with `NA` where necessary. Non-numeric values are flagged or replaced programmatically rather than interactively.
+This function checks if a column is "mostly numeric" (based on a threshold) and flags or replaces non-numeric values with `NA` where necessary. Non-numeric values are flagged or replaced programmatically rather than interactively. The `threshold` parameter determines the proportion of numeric or `NA` values required for a column to be considered "mostly numeric." It serves as a cutoff point to decide whether the column predominantly contains numeric values. The default threshold is `0.95`, meaning that at least 95% of the values in the column must be numeric or `NA` for it to pass the "mostly numeric" check.
+
+#### **Use Cases**
+
+-   Clean up numeric columns with invalid entries.
+
+-   Programmatically handle mixed-type columns.
+
+```{r}
+#Check whether there are non-numeric values in my zipcode column
+flagnonnumeric(animalshelter, "Zip")$non_numeric_values
+
+```
 
 ```{r}
 df <- data.frame(
@@ -143,3 +189,7 @@ print(result$data)
 print(result$non_numeric_values)
 
 ```
+
+## Putting It All Together
+
+This vignette demonstrates how **SolelyData** can tackle common data challenges, making it an invaluable tool for cleaning and preparing data for analysis. By combining these functions, users can create efficient, repeatable workflows that save time and improve data quality.
