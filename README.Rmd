@@ -13,12 +13,11 @@ knitr::opts_chunk$set(
 )
 ```
 
-# SolelyData
-
-![Solely Data](man/figures/solely_data_hex.png)
+# SolelyData ![Solely Data](man/figures/solely_data_hex.png){width="132"}
 
 <!-- badges: start -->
 
+[![R-CMD-check](https://github.com/maisha-k/SolelyData/actions/workflows/main.yml/badge.svg)](https://github.com/maisha-k/SolelyData/actions/workflows/main.yml)
 <!-- badges: end -->
 
 The goal of **SolelyData** is to provide tools for cleaning, organizing, and visualizing datasets efficiently. This package is inspired by the idea of "cleaning the sole" of messy data, ensuring it's ready for analysis.

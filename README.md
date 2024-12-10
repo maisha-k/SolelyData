@@ -1,14 +1,12 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# SolelyData
-
-<figure>
-<img src="man/figures/solely_data_hex.png" alt="Solely Data" />
-<figcaption aria-hidden="true">Solely Data</figcaption>
-</figure>
+# SolelyData <img src="man/figures/solely_data_hex.png" width="132"
+alt="Solely Data" />
 
 <!-- badges: start -->
+
+[![R-CMD-check](https://github.com/maisha-k/SolelyData/actions/workflows/main.yml/badge.svg)](https://github.com/maisha-k/SolelyData/actions/workflows/main.yml)
 <!-- badges: end -->
 
 The goal of **SolelyData** is to provide tools for cleaning, organizing,
