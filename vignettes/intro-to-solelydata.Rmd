@@ -1,0 +1,145 @@
+---
+title: "intro-to-solelydata"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{intro-to-solelydata}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(SolelyData)
+```
+
+## Overview
+
+Welcome to the **SolelyData** package! The **SolelyData** package is designed to simplify **data cleaning**, **summarization**, and **visualization** for a wide variety of datasets. To help you get started, the package includes a built-in dataset of **animal shelter data**, which you can use for exploration, practice, or as a template for working with your own data.
+
+## Installation
+
+Install the package using: `devtools::install_github("maisha-k/SolelyData")` in your console.
+
+## Key Functions
+
+### Summarizing Missing Values with `missingsum`
+
+The `missingsum` function summarizes missing data in a dataset into a table. It identifies missing or invalid values based on NA as well as user-defined criteria or default values. The default values are : "", "NA", "N/A", and "Missing". This function is particularly useful for identifying and tabulating custom terms used to represent missing data if specified.
+
+```{r}
+missingsum(animalshelter) # Calculates the sum of missing values in the dataset using default settings, including NA handling
+
+```
+
+```{r}
+missingsum(animalshelter, missing_values = numeric(0) ) 
+# Captures missing values that are NA even when `missing_values` is an empty numeric vector. 
+# This flexibility allows the function to handle default missing values or custom definitions effectively.
+```
+
+### Visualizing Data Completeness with `plot_completeness`
+
+Incomplete data is a common challenge in real-world datasets, and identifying the extent of missingness is critical for effective preprocessing. The `plot_completeness` function provides an intuitive way to visualize the completeness of your dataset.
+
+This function generates a histogram that displays the number of non-missing values per row, offering insights into the overall data quality and helping users decide on appropriate data cleaning strategies.
+
+In this example, we use the `plot_completeness` function to assess the completeness of an animal shelter dataset. This dataset contains 18 columns, with varying degrees of missingness across rows. This visualization enables users to quickly identify patterns of missingness and determine whether rows with lower completeness should be imputed, removed, or handled in a different way.
+
+```{r}
+plot_completeness(animalshelter, title = "Completeness of Animal Shelter Data")
+```
+
+### Identifying Typos in Categorical Data with `solotypo`
+
+Typos in categorical data can create inconsistencies that affect downstream analysis, such as grouping and summarization. The `solotypo` function helps identify typos in your dataset by grouping similar strings and suggesting potential corrections. The function includes a `threshold` parameter, with a default value of `0.2`. This parameter determines the maximum allowable string distance (based on the Jaro-Winkler similarity method) for considering two strings as similar.
+
+This vignette demonstrates how to use `solotypo` to identify typos in a column and receive suggestions for correction.
+
+```{r}
+# Sample dataset
+data <- data.frame(
+  Fruit = c("apple", "APPLE", "appl", "orange","orange" ,"banana", "BANANA", "banan", "grap"),
+  stringsAsFactors = FALSE
+)
+```
+
+```{r}
+solotypo(data, column = "Fruit")
+
+```
+
+```{r}
+solotypo(data, column = "Fruit", threshold = 0.8)
+
+```
+
+Above, `"grap"` being matched to `"orange"` suggests that with a threshold of `0.8`, the function permits broad matches. A lower threshold would result in stricter, more precise corrections.
+
+### Validating Date Columns with `validate_dates`
+
+Dates are a fundamental component of many datasets, and ensuring their validity is crucial for accurate analysis. The `validate_dates` function helps identify invalid or incorrectly formatted date entries in a specified column, ensuring data consistency and reliability. This function assumes dates are entered as `%Y-%m-%d` .
+
+This vignette demonstrates how to use `validate_dates` to validate date columns in a dataset, pinpoint invalid entries, and receive structured feedback for further action.
+
+```{r}
+# Sample dataset
+dates <- data.frame(
+  Event = c("Meeting", "Deadline", "Conference", "Holiday"),
+  Date = c("2024-12-10", "12/25/2024", "2024-13-01", "2024-12-09"), # Includes invalid date "2024-13-01" and "12/25/2024"
+  stringsAsFactors = FALSE
+)
+
+validate_dates(dates, date_columns  = "Date")
+
+```
+
+When additional parameters `min_year` and `max_year` are specified in the `validate_dates` function, the validation process extends beyond checking for proper formatting. These parameters allow you to **restrict the valid date range** to a specified window of years. This ensures that even well-formatted dates are flagged as invalid if they fall outside the defined range.
+
+```{r}
+validate_dates(animalshelter, date_columns = "Date") 
+```
+
+```{r}
+validate_dates(animalshelter, date_columns = "Date", min_year = 2020, max_year = 2023) 
+```
+
+### Flagging Unusual Values with `flagweirdanimals`
+
+In many datasets, ensuring that column values fall within a predefined set of valid options is crucial for maintaining data quality. The `flagweirdanimals` function helps identify rows in your dataset where a specified column contains values that do not match a list of valid entries. It is not case sensitive.
+
+This function is versatile and can be applied across various contexts, from validating animal types in shelter data to ensuring consistency in any categorical column.
+
+```{r}
+animalshelter_flag <- flagweirdanimals(animalshelter, column = "animal_type", valid_types = c("dog", "cat", "rabbit", "bird"))
+# View rows where 'weird' is TRUE
+weird_animals <- animalshelter_flag[animalshelter_flag$weird == TRUE, ]
+print(weird_animals['animal_type'])
+
+```
+
+### Flagging and Handling Non-Numeric Values with `flagnonnumeric`
+
+This function checks if a column is "mostly numeric" (based on a threshold) and flags or replaces non-numeric values with `NA` where necessary. Non-numeric values are flagged or replaced programmatically rather than interactively.
+
+```{r}
+df <- data.frame(
+  a = c(1, 2, "x", 4, NA), 
+  b = c("a", "b", "c", "d", "e")
+)
+
+# Apply the function
+result <- flagnonnumeric(df, "a", threshold = 0.8, replace_with_na = TRUE)
+
+# View the modified data
+print(result$data)
+
+# View the flagged non-numeric values
+print(result$non_numeric_values)
+
+```

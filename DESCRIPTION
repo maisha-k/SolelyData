@@ -1,0 +1,29 @@
+Package: SolelyData
+Type: Package
+Title: An Intuitive Data Analysis Toolkit for R Beginners
+Version: 0.1.0
+Author: person("Maisha", "Kasole", email = "maisha.kasole@gmail.com", role = c("aut", "cre"),
+           comment = c(ORCID = "YOUR-ORCID-ID"))
+Maintainer: The package maintainer <maisha.kasole@gmail.com>
+Description: SolelyData provides user-friendly tools and workflows for cleaning, analyzing, 
+    and visualizing raw datasets. It is specifically designed with erroneous datasets in mind, 
+    offering tailored functionalities to address common challenges in data handling
+    and exploration. Ideal for beginners to R, this package emphasizes simplicity and effectiveness.
+License: GPL (>= 3)
+Encoding: UTF-8
+LazyData: true
+Imports: 
+    dplyr,
+    ggplot2,
+    gt,
+    stringdist,
+    tidyr
+RoxygenNote: 7.3.2
+Depends: 
+    R (>= 2.10)
+Suggests: 
+    knitr,
+    rmarkdown,
+    testthat (>= 3.0.0)
+Config/testthat/edition: 3
+VignetteBuilder: knitr
